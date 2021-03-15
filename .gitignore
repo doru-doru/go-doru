@@ -1,0 +1,8 @@
+# environment variables
+.env
+
+# doru data
+.doru
+
+# fs
+.DS_Store

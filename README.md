@@ -9,3 +9,15 @@ authorization happens over UCAN, issued from user;
 user must request service from Doru client.
 
 Doru client has policy for accepting to service a did (or delegated dids). The obvious one is the opening of a funded payment channel, from which the did must pay for services rendered. Alternatively, apps with a web2 authentication can connect a known user to their did, and render service without additional charge as part of their application.
+
+## Getting started
+
+### Running development
+
+Run Doru and Threads with docker-compose.
+
+Create an environment `.env` file with following variables set (see `.env.example`)
+
+```
+REPO_PATH=~/myrepo
+```
