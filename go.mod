@@ -1,9 +1,9 @@
-module github.com/doru-data/go-doru
+module github.com/doru-doru/go-doru
 
-go 1.14
+go 1.16
 
 require (
-	github.com/ipfs/go-log v1.0.4 // indirect
-	github.com/spf13/cobra v1.1.1 // indirect
+	github.com/ipfs/go-log v1.0.5 // indirect
+	github.com/spf13/cobra v1.1.3 // indirect
 	github.com/spf13/viper v1.7.1 // indirect
 )

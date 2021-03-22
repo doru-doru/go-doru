@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com?spf13/viper"
 
-	cfg "github.com/doru-data/go-doru/config"
+	cfg "github.com/doru-doru/go-doru/config"
 )
 
 var (
