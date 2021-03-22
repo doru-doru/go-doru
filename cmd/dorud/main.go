@@ -1,6 +1,9 @@
 package main
 
 import (
+
+	"github.com/doru-doru/go-doru/cmd"
+
 	logging "github.com/ipfs/go-log/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -11,7 +14,46 @@ const daemonName = "dorud"
 var (
 	log = logging.Logger("dorud")
 
-	config = &cmd.Config
+	config = &cmd.Config{
+		Viper:     viper.New(),
+		Directory: "." + daemonName,
+		Name:      "config",
+		Flags: map[string]cmd.Flag{
+			"debug": {
+				Key:          "log.debug",
+				DefaultValue: false,
+			},
+
+			// Addresses
+			"addressApi": {
+				Key:          "address.api",
+				DefaultValue: "127.0.0.1:1414",
+			},
+
+			// Datastore
+			"datastoreType": {
+				Key:          "datastore.type",
+				DefaultValue: "badger",
+			},
+			"datastoreBadgerRepo": {
+				Key:     "datastore.badger.repo",
+				DefaultValue: "${HOME}/." + daemonName + "/repo",
+			},
+
+			// Threads
+			"threadsAddress": {
+				Key: "threads.address",
+				DefaultValue: "127.0.0.1:4000",
+			},
+
+			// IPFS
+			"ipfsMultiaddress": {
+				Key: "ipfs.multiaddr",
+				DefaultValue: "/ip4/127.0.0.1/tcp/5001",
+			},
+		},
+		EnvPrefix: "DORU",
+	}
 )
 
 var rootCmd = &cobra.Command{
@@ -20,7 +62,7 @@ var rootCmd = &cobra.Command{
 	Long:  "Doru daemon grows consistent data tries.",
 	PersistentPreRun: func(c *cobra.Command, args []string) {
 		config.Viper.SetConfigType("yaml")
-		cmd.ExpandConfigVars(config.Viper, config.Flags)
+		// cmd.ExpandConfigVars(config.Viper, config.Flags)
 
 	},
 	Run: func(c *cobra.Command, args []string) {
@@ -29,9 +71,54 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
+	cobra.OnInitialize(cmd.InitConfig(config))
 
+	rootCmd.PersistentFlags().StringVar(
+		&config.Path,
+		"path",
+		"",
+		"Working directory for Doru")
+
+	rootCmd.PersistentFlags().StringVar(
+		&config.File,
+		"config",
+		"",
+		"Config file")
+
+	rootCmd.PersistentFlags().BoolP(
+		"debug",
+		"d",
+		config.Flags["debug"].DefaultValue.(bool),
+		"Enable debug logging")
+
+	rootCmd.PersistentFlags().String(
+		"addressApi",
+		config.Flags["addressApi"].DefaultValue.(string),
+		"API listen address")
+
+	rootCmd.PersistentFlags().String(
+		"datastoreType",
+		config.Flags["datastoreType"].DefaultValue.(string),
+		"Datastore type (only badger atm)")
+
+	rootCmd.PersistentFlags().String(
+		"datastoreBadgerRepo",
+		config.Flags["datastoreBadgerRepo"].DefaultValue.(string),
+		"Path to badger repository")
+
+	rootCmd.PersistentFlags().String(
+		"threadsAddress",
+		config.Flags["threadsAddress"].DefaultValue.(string),
+		"Threads API address")
+
+	rootCmd.PersistentFlags().String(
+		"ipfsMultiaddress",
+		config.Flags["ipfsMultiaddress"].DefaultValue.(string),
+		"IPFS API multiaddress")
+
+	// err := cmd.BindFlags(config.Viper, rootCmd, config.Flags)
 }
 
 func main() {
-	cmd.ErrCheck(rootCmd.Execute())
+	// cmd.ErrCheck(rootCmd.Execute())
 }
