@@ -3,18 +3,17 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
-	"github.com/doru-doru/go-doru/cmd"
+	"github.com/doru-doru/go-doru/v0/cmd"
 	"github.com/doru-doru/go-doru/v0/core"
-	"google.golang.org/grpc"
+	// "google.golang.org/grpc"
 
 	// "github.com/mitchellh/go-homedir"
 	logging "github.com/ipfs/go-log/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/textileio/go-threads/core/did"
-	tclient "github.com/textileio/go-threads/net/api/client"
+	// "github.com/textileio/go-threads/core/did"
+	// tclient "github.com/textileio/go-threads/net/api/client"
 	"github.com/textileio/go-threads/util"
 )
 
@@ -88,11 +87,11 @@ var rootCmd = &cobra.Command{
 		debug := config.Viper.GetBool("log.debug")
 		// TODO: setup log file
 
-		addressApi := config.Viper.GetString("address.api")
-		datastoreType := config.Viper.GetString("datastore.type")
-		datastoreBadgerRepo := config.Viper.GetString("datastore.badger.repo")
-		threadsAddress := config.Viper.GetString("threads.addr")
-		ipfsMultiaddress := config.Viper.GetString("ipfs.multiaddr")
+		addressApi := cmd.AddrFromStr(config.Viper.GetString("address.api"))
+		// datastoreType := config.Viper.GetString("datastore.type")
+		// datastoreBadgerRepo := config.Viper.GetString("datastore.badger.repo")
+		threadsAddress := cmd.AddrFromStr(config.Viper.GetString("threads.addr"))
+		ipfsMultiaddress := cmd.AddrFromStr(config.Viper.GetString("ipfs.multiaddr"))
 
 		// net, err := tclient.NewClient(threadsAddress, getClientRPCOpts(threadsAddress)...)
 		var opts []core.Option
@@ -107,7 +106,8 @@ var rootCmd = &cobra.Command{
 			AddressApi: addressApi,
 			AddressThreadsHost: threadsAddress,
 			AddressIpfsHost:    ipfsMultiaddress,
-		})
+		}, opts...)
+		doru.Bootstrap()
 	},
 }
 
