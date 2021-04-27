@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"os"
 	"strings"
 
 	ma "github.com/multiformats/go-multiaddr"
@@ -62,6 +63,17 @@ func initViperConfig(
 		} else {
 			// panic on error if config file is found but another error occured
 			panic(err)
+		}
+	}
+}
+
+// ExpandConfigVars evaluates the viper config file's expressions. -- credit Textile
+func ExpandConfigVars(v *viper.Viper, flags map[string]Flag) {
+	for _, f := range flags {
+		if f.Key != "" {
+			if str, ok := v.Get(f.Key).(string); ok {
+				v.Set(f.Key, os.ExpandEnv(str))
+			}
 		}
 	}
 }

@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	// grpcweb "github.com/improbable-eng/grpc-web/go/grpcweb"
@@ -77,7 +76,6 @@ func NewDoru(
 	}
 
 	log.Info("started doru core")
-	fmt.Print("hola world")
 
 	return d, nil
 }

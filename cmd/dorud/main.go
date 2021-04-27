@@ -6,12 +6,14 @@ import (
 
 	"github.com/doru-doru/go-doru/v0/cmd"
 	"github.com/doru-doru/go-doru/v0/core"
+
 	// "google.golang.org/grpc"
 
 	// "github.com/mitchellh/go-homedir"
 	logging "github.com/ipfs/go-log/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
 	// "github.com/textileio/go-threads/core/did"
 	// tclient "github.com/textileio/go-threads/net/api/client"
 	"github.com/textileio/go-threads/util"
@@ -32,10 +34,10 @@ var (
 				DefaultValue: false,
 			},
 
-			// Addresses
-			"addressApi": {
-				Key:          "address.api",
-				DefaultValue: "127.0.0.1:1414",
+			// Doru Api
+			"apiMultiaddress": {
+				Key:          "api.multiaddress",
+				DefaultValue: "/ip4/127.0.0.1/tcp/1414",
 			},
 
 			// Datastore
@@ -49,14 +51,14 @@ var (
 			},
 
 			// Threads
-			"threadsAddress": {
-				Key: "threads.address",
-				DefaultValue: "127.0.0.1:4000",
+			"threadsMultiaddress": {
+				Key: "threads.multiaddress",
+				DefaultValue: "/ip4/127.0.0.1/tcp/4000",
 			},
 
 			// IPFS
 			"ipfsMultiaddress": {
-				Key: "ipfs.multiaddr",
+				Key: "ipfs.multiaddress",
 				DefaultValue: "/ip4/127.0.0.1/tcp/5001",
 			},
 		},
@@ -70,7 +72,7 @@ var rootCmd = &cobra.Command{
 	Long:  "Doru daemon to grow consistent data tries.",
 	PersistentPreRun: func(c *cobra.Command, args []string) {
 		config.Viper.SetConfigType("yaml")
-		//TODO: cmd.ExpandConfigVars(config.Viper, config.Flags)
+		cmd.ExpandConfigVars(config.Viper, config.Flags)
 
 		if config.Viper.GetBool("log.debug") {
 			err := util.SetLogLevels(map[string]logging.LogLevel{
@@ -87,11 +89,13 @@ var rootCmd = &cobra.Command{
 		debug := config.Viper.GetBool("log.debug")
 		// TODO: setup log file
 
-		addressApi := cmd.AddrFromStr(config.Viper.GetString("address.api"))
+		addressApi := cmd.AddrFromStr(config.Viper.GetString("api.multiaddress"))
 		// datastoreType := config.Viper.GetString("datastore.type")
 		// datastoreBadgerRepo := config.Viper.GetString("datastore.badger.repo")
-		threadsAddress := cmd.AddrFromStr(config.Viper.GetString("threads.addr"))
-		ipfsMultiaddress := cmd.AddrFromStr(config.Viper.GetString("ipfs.multiaddr"))
+		threadsAddress := cmd.AddrFromStr(
+			config.Viper.GetString("threads.multiaddress"))
+		ipfsMultiaddress := cmd.AddrFromStr(
+			config.Viper.GetString("ipfs.multiaddress"))
 
 		// net, err := tclient.NewClient(threadsAddress, getClientRPCOpts(threadsAddress)...)
 		var opts []core.Option
@@ -107,6 +111,7 @@ var rootCmd = &cobra.Command{
 			AddressThreadsHost: threadsAddress,
 			AddressIpfsHost:    ipfsMultiaddress,
 		}, opts...)
+		cmd.ErrCheck(err)
 		doru.Bootstrap()
 	},
 }
@@ -133,8 +138,8 @@ func init() {
 		"Enable debug logging")
 
 	rootCmd.PersistentFlags().String(
-		"addressApi",
-		config.Flags["addressApi"].DefaultValue.(string),
+		"apiMultiaddress",
+		config.Flags["apiMultiaddress"].DefaultValue.(string),
 		"API listen address")
 
 	rootCmd.PersistentFlags().String(
@@ -148,8 +153,8 @@ func init() {
 		"Path to badger repository")
 
 	rootCmd.PersistentFlags().String(
-		"threadsAddress",
-		config.Flags["threadsAddress"].DefaultValue.(string),
+		"threadsMultiaddress",
+		config.Flags["threadsMultiaddress"].DefaultValue.(string),
 		"Threads API address")
 
 	rootCmd.PersistentFlags().String(

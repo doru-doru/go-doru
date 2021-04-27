@@ -1,3 +1,8 @@
+
+build-dorud:
+	go build -o ./.build/dorud cmd/dorud/main.go
+.PHONY: build-dorud
+
 doru-up:
 	docker-compose -f cmd/dorud/docker-compose-dev.yml --env-file=.env up --build
 

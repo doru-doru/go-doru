@@ -8,9 +8,11 @@ services:
       - "${REPO_PATH}/doru:/data/doru"
     environment:
       - DORU_LOG_DEBUG=true
-      - DORU_ADDR_API=0.0.0.0:1414
+      - DORU_API_MULTIADDRESS=/ip4/0.0.0.0/tcp/1414
+      - DORU
     ports:
       - "127.0.0.1:1414:1414"
+      - "127.0.0.1:40000:40000"
     security_opt:
       - "seccomp:unconfined"
     cap_add:
